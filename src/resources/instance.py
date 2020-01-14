@@ -6,7 +6,7 @@ from endpoints.join_match import JoinMatch
 from endpoints.request_match import RequestMatch
 from endpoints.submit_turn import SubmitTurn
 from endpoints.request_state import RequestState
-from resources.runtime_date import Matches
+from resources.runtime_data import Matches
 
 class Instance:
 

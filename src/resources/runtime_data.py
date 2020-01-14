@@ -1,12 +1,10 @@
-
+import json
+from datetime import datetime
 
 class Matches:
 
     def __init__(self):
-        this.matchList = {}
-
-    def newMatch(self):
-        pass
+        self.matchDump = {}
 
     def retrieveMatchData(self, accessToken):
         pass
@@ -14,22 +12,27 @@ class Matches:
     def setMatchData(self, accessToken, newState):
         pass
 
-    def generateAccessToken(self):
-        pass
+    def addMatch(self, accessToken, newMatch):
+        self.matchDump[accessToken] = newMatch
 
     def removeInactiveMatches(self):
         pass
 
-    
+    def isNotUniqueAccessToken(self, token):
+        return token in self.matchDump
 
 
 class Match:
 
-    def __init__(self):
-        this.blackToken = None
-        this.whiteToken = None
+    def __init__(self, gameState, blackToken):
+        self.blackToken = blackToken
+        self.whiteToken = None
+        self.lastUpdated = datetime.now()
+        self.gameState = gameState
 
-    def makeUserTokens(self):
+    
+
+
 class Model:
     def __init__():
         pass
