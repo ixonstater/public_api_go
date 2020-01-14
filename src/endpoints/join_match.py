@@ -14,7 +14,7 @@ class JoinMatch:
             return Response("An internal error occured.")
 
         self.context.matches.joinMatch(self.requestBody['accessToken'], self.requestBody['whiteToken'])
-        return Response(self.context.matches.getMatchStateAsJSON(self.requestBody['accessToken']))
+        return Response(self.requestBody['accessToken'])
 
     def sanitizeRequest(self):
         self.requestBody = self.request.json

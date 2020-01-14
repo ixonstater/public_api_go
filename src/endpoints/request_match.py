@@ -18,7 +18,7 @@ class RequestMatch:
             return Response("An internal error occured.")
 
         accessToken = self.generateAccessToken()
-        newMatch = Match(const.EMPTYSTATE, self.requestBody['blackToken'])
+        newMatch = Match(self.requestBody['blackToken'])
         self.context.matches.addMatch(accessToken, newMatch)
 
         return Response(accessToken)

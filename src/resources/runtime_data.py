@@ -1,4 +1,5 @@
 import json
+from resources import const
 from datetime import datetime
 
 class Matches:
@@ -27,17 +28,50 @@ class Matches:
     def tokenExists(self, token):
         return token in self.matchDump
 
+    def addToDBQueue(self, accessToken, nextMove):
+        pass
+
+    def checkWhosTurn(self, accessToken, userToken):
+        matchData = self.matchDump[accessToken]
+        whitesTurn = matchData.gameState['whosTurn'] == const.WHITE and userToken != matchData.whiteToken
+        blacksTurn = matchData.gameState['whosTurn'] == const.BLACK and userToken != matchData.blackToken
+        return (whitesTurn or blacksTurn)
+                
+
     def removeInactiveMatches(self):
         pass
 
 
 class Match:
 
-    def __init__(self, gameState, blackToken):
+    def __init__(self, blackToken):
         self.blackToken = blackToken
         self.whiteToken = None
         self.lastUpdated = datetime.now()
-        self.gameState = gameState
+        self.gameState = {
+            "whosTurn": const.BLACK,
+            "boardState": [
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+            ]
+        }
 
     
 
