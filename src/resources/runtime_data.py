@@ -6,20 +6,29 @@ class Matches:
     def __init__(self):
         self.matchDump = {}
 
-    def retrieveMatchData(self, accessToken):
-        pass
+    def setMatchState(self, accessToken, newState):
+        self.matchDump[accessToken].gameState = newState
 
-    def setMatchData(self, accessToken, newState):
-        pass
+    def getMatchState(self, accessToken):
+        return self.matchDump[accessToken].gameState
+
+    def getMatchStateAsJSON(self, accessToken):
+        return json.dumps(self.matchDump[accessToken].gameState)
+
+    def newStateExists(self, accessToken, whosTurn):
+        return self.matchDump[accessToken].gameState['whosTurn'] != whosTurn
 
     def addMatch(self, accessToken, newMatch):
         self.matchDump[accessToken] = newMatch
+    
+    def joinMatch(self, accessToken, whiteToken):
+        self.matchDump[accessToken].whiteToken = whiteToken
+
+    def tokenExists(self, token):
+        return token in self.matchDump
 
     def removeInactiveMatches(self):
         pass
-
-    def isNotUniqueAccessToken(self, token):
-        return token in self.matchDump
 
 
 class Match:

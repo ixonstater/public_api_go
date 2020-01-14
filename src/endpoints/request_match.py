@@ -15,7 +15,7 @@ class RequestMatch:
     def processRequest(self):
         self.sanitizeRequest()
         if(not self.validRequest):
-            return False
+            return Response("An internal error occured.")
 
         accessToken = self.generateAccessToken()
         newMatch = Match(const.EMPTYSTATE, self.requestBody['blackToken'])
@@ -25,12 +25,11 @@ class RequestMatch:
 
     def sanitizeRequest(self):
         self.requestBody = self.request.json
-        return True
 
     def generateAccessToken(self):
         notUnique = True
         while(notUnique):
             letters = string.ascii_lowercase
             letters = ''.join(random.choice(letters) for i in range(5))
-            notUnique = self.context.matches.isNotUniqueAccessToken(letters)
+            notUnique = self.context.matches.tokenExists(letters)
         return letters

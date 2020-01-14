@@ -1,8 +1,6 @@
-import json
-
 BLACK = 1
 WHITE = 2
-EMPTYSTATE = json.dumps({
+EMPTYSTATE = {
     "whosTurn": BLACK,
     "boardState": [
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -25,4 +23,4 @@ EMPTYSTATE = json.dumps({
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     ]
-})
+}
