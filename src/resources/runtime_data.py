@@ -30,4 +30,6 @@ class Match:
         this.whiteToken = None
 
     def makeUserTokens(self):
+class Model:
+    def __init__():
         pass
