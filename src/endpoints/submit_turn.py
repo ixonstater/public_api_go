@@ -50,8 +50,23 @@ class SubmitTurn:
     def updateGameState(self):
         nextMove = [self.requestBody['x'], self.requestBody['y']]
         matchData = self.context.matches.getMatchState(self.requestBody['accessToken'])
-        deadStoneFinder = new FindDeadStones()#TODO add params
+        color = self.context.matches.getColor(self.requestBody['accessToken'], self.requestBody['userToken'])
+        deadStoneFinder = FindDeadStones(matchData['boardState'], nextMove, color)
         stonesToRemove = deadStoneFinder.findStonesToRemove()
+        newBoard = self.removeStones(stonesToRemove, matchData['boardState'])
+        newBoard[nextMove[0]][nextMove[1]] = color
+        newState = {
+            'boardState': newBoard,
+            'whosTurn': const.BLACK if color == const.WHITE else const.WHITE
+        }
+        self.context.matches.setMatchState(self.requestBody['accessToken'], newState)
+        self.response = Response(self.requestBody['accessToken'])
+
+    def removeStones(self, stonesToRemove, board):
+        for stone in stonesToRemove:
+            board[stone[0]][stone[1]] = const.EMPTY
+        return board
+            
 
     
 class FindDeadStones:
@@ -62,6 +77,7 @@ class FindDeadStones:
         self.board = board
         self.nextMove = nextMove
         self.friendlyColor = color
+        self.toRemove = []
         self.friendCode = 0
         self.emptyCode = 1
         self.enemyCode = 2
@@ -70,7 +86,11 @@ class FindDeadStones:
         for x in range(0, 19):
             for y in range(0, 19):
                 if(self.board[x][y] != 0):
-                    self.findStonesToRemoveHelper(x,y)
+                    stoneGroup, lifeCount = self.findStonesToRemoveHelper(x,y)
+                    if(lifeCount == 0):
+                        self.toRemove.append(stoneGroup)
+
+        return self.toRemove
 
     def findStonesToRemoveHelper(self,x,y):
         lifeCount = 0
@@ -100,7 +120,7 @@ class FindDeadStones:
         x = location[0]
         y = location[1]
 
-        elif(x == 0):
+        if(x == 0):
             if(y == 0):
                 locations = [None, [1,0], [0,1], None]
                 return [[],]

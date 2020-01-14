@@ -36,6 +36,17 @@ class Matches:
         whitesTurn = matchData.gameState['whosTurn'] == const.WHITE and userToken != matchData.whiteToken
         blacksTurn = matchData.gameState['whosTurn'] == const.BLACK and userToken != matchData.blackToken
         return (whitesTurn or blacksTurn)
+
+    def getColor(self, accessToken, userToken):
+        match = self.matchDump[accessToken]
+        if(match.gameState['whosTurn'] == const.BLACK):
+            return const.BLACK
+
+        elif (match.gameState['whosTurn'] == const.WHITE):
+            return const.WHITE
+
+        else:
+            return const.EMPTY
                 
 
     def removeInactiveMatches(self):
