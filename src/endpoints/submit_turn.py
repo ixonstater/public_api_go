@@ -14,6 +14,7 @@ class SubmitTurn:
 
         if(self.validRequest):
             self.validateWhosTurn()
+            self.validateIndex()
 
         if(self.validRequest):
             self.context.matches.addToDBQueue(self.requestBody['accessToken'], [self.requestBody['x'], self.requestBody['y']])
@@ -47,14 +48,22 @@ class SubmitTurn:
             self.validRequest = False
             self.response = Response('Not your turn.')
 
+    def validateIndex(self):
+        if(not self.context.matches.indexIsEmpty(self.requestBody['accessToken'], [self.requestBody['x'], self.requestBody['y']])):
+            self.validRequest = False
+            self.reponse = Response("Stone already in place in that index.")
+
     def updateGameState(self):
-        nextMove = [self.requestBody['x'], self.requestBody['y']]
         matchData = self.context.matches.getMatchState(self.requestBody['accessToken'])
+
+        nextMove = [self.requestBody['x'], self.requestBody['y']]
         color = self.context.matches.getColor(self.requestBody['accessToken'], self.requestBody['userToken'])
-        deadStoneFinder = FindDeadStones(matchData['boardState'], nextMove, color)
-        stonesToRemove = deadStoneFinder.findStonesToRemove()
-        newBoard = self.removeStones(stonesToRemove, matchData['boardState'])
+        newBoard = matchData['boardState']
         newBoard[nextMove[0]][nextMove[1]] = color
+
+        deadStoneFinder = FindDeadStones(newBoard, nextMove, color)
+        stonesToRemove = deadStoneFinder.findStonesToRemove()
+        newBoard = self.removeStones(stonesToRemove, newBoard)
         newState = {
             'boardState': newBoard,
             'whosTurn': const.BLACK if color == const.WHITE else const.WHITE
@@ -76,18 +85,19 @@ class FindDeadStones:
         self.toCheckQueue = []
         self.board = board
         self.nextMove = nextMove
-        self.friendlyColor = color
+        self.friendlyColor = None
         self.toRemove = []
-        self.friendCode = 0
-        self.emptyCode = 1
+        self.friendCode = 1
+        self.emptyCode = 0
         self.enemyCode = 2
 
     def findStonesToRemove(self):
         for x in range(0, 19):
             for y in range(0, 19):
-                if(self.board[x][y] != 0):
+                if(self.board[x][y] != const.EMPTY):
+                    self.friendlyColor = self.board[x][y]
                     stoneGroup, lifeCount = self.findStonesToRemoveHelper(x,y)
-                    if(lifeCount == 0):
+                    if(lifeCount == 0 and len(stoneGroup) != 0):
                         self.toRemove.append(stoneGroup)
 
         return self.toRemove
@@ -100,11 +110,15 @@ class FindDeadStones:
 
         while(self.toCheckQueue):
             currentStoneLocation = self.toCheckQueue.pop()
-            stoneGroup.append(currentStoneLocation)
-            stoneName = x + ',' + y
+            x = currentStoneLocation[0]
+            y = currentStoneLocation[1]
+            stoneName = str(x) + ',' + str(y)
+            if(stoneName in self.visitedSet):
+                continue
             self.visitedSet.add(stoneName)
+            stoneGroup.append(currentStoneLocation)
 
-            surroundings = self.getStoneFriendsAndLives(currentStoneLocation)
+            surroundings = list(self.getStoneFriendsAndLives(currentStoneLocation))
             for index in surroundings:
                 if(index[1] == self.emptyCode):
                     lifeCount += 1
@@ -123,7 +137,6 @@ class FindDeadStones:
         if(x == 0):
             if(y == 0):
                 locations = [None, [1,0], [0,1], None]
-                return [[],]
 
             elif(y == 18):
                 locations = [[17, 0], [18,1], None, None]
@@ -153,10 +166,17 @@ class FindDeadStones:
         return zip(locations, map(self.blankFriendEnemy, locations))
 
     def blankFriendEnemy(self, location):
-        if(self.board[location[0]][location[1]] == const.EMPTY):
+        if(location == None):
+            return self.enemyCode
+            
+        x = location[0]
+        y = location[1]
+        lookupKey = str(x) + ',' + str(y)
+
+        if(self.board[x][y] == const.EMPTY):
             return self.emptyCode
 
-        elif (self.board[location[0]][location[1]] == self.friendlyColor):
+        elif (self.board[x][y] == self.friendlyColor and not lookupKey in self.visitedSet):
             return self.friendCode
 
         else:

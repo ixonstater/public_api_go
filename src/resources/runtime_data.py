@@ -47,7 +47,9 @@ class Matches:
 
         else:
             return const.EMPTY
-                
+    
+    def indexIsEmpty(self, accessToken, index):
+        return self.matchDump[accessToken].gameState['boardState'][index[0]][index[1]] == const.EMPTY        
 
     def removeInactiveMatches(self):
         pass
@@ -83,6 +85,7 @@ class Match:
                 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
             ]
         }
+
 
     
 
