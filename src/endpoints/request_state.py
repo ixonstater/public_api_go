@@ -1,4 +1,5 @@
 from pyramid.response import Response
+import json
 
 class RequestState:
     
@@ -11,14 +12,16 @@ class RequestState:
     def processRequest(self):
         self.sanitizeRequest()
         if(not self.validRequest):
-            return Response('An internal error occured.')
+            self.response = 'An internal error occured.'
         
         elif(not self.context.matches.newStateExists(self.requestBody['accessToken'], self.requestBody['whosTurn'])):
-            return Response ('{}')
+            self.response = '{}'
 
         else:
 
-            return Response(self.context.matches.getMatchStateAsJSON(self.requestBody['accessToken']))
+            self.response = self.context.matches.getMatchStateAsJSON(self.requestBody['accessToken'])
+
+        return Response(json.dumps(self.response))
 
     def sanitizeRequest(self):
         self.requestBody = self.request.json

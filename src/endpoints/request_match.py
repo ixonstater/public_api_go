@@ -2,6 +2,7 @@ from pyramid.response import Response
 from resources.runtime_data import Match
 import random
 import string
+import json
 from resources import const
 
 class RequestMatch:
@@ -21,7 +22,7 @@ class RequestMatch:
         newMatch = Match(self.requestBody['blackToken'])
         self.context.matches.addMatch(accessToken, newMatch)
 
-        return Response(accessToken)
+        return Response(json.dumps(accessToken))
 
     def sanitizeRequest(self):
         self.requestBody = self.request.json

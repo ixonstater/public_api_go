@@ -1,5 +1,6 @@
 from pyramid.response import Response
 from resources import const
+import json
 
 class SubmitTurn:
 
@@ -20,7 +21,7 @@ class SubmitTurn:
             self.context.matches.addToDBQueue(self.requestBody['accessToken'], [self.requestBody['x'], self.requestBody['y']])
             self.updateGameState()
 
-        return self.response
+        return Response(json.dumps(self.response))
 
     def sanitizeRequest(self):
         self.requestBody = self.request.json
@@ -33,25 +34,25 @@ class SubmitTurn:
             )
         ):
             self.validRequest = False
-            self.response = Response('An internal error occured.')
+            self.response = 'An internal error occured.'
 
         elif(self.requestBody['x'] >= 19 or self.requestBody['y'] >= 19):
             self.validRequest = False
-            self.response = Response('An internal error occured.')
+            self.response = 'An internal error occured.'
 
         elif(not self.context.matches.tokenExists(self.requestBody['accessToken'])):
             self.validRequest = False
-            self.response = Response('An internal error occured.')
+            self.response = 'An internal error occured.'
 
     def validateWhosTurn(self):
         if(self.context.matches.checkWhosTurn(self.requestBody['accessToken'], self.requestBody['userToken'])):
             self.validRequest = False
-            self.response = Response('Not your turn.')
+            self.response = 'Not your turn.'
 
     def validateIndex(self):
         if(not self.context.matches.indexIsEmpty(self.requestBody['accessToken'], [self.requestBody['x'], self.requestBody['y']])):
             self.validRequest = False
-            self.reponse = Response("Stone already in place in that index.")
+            self.response = 'Stone already in place in that index.'
 
     def updateGameState(self):
         matchData = self.context.matches.getMatchState(self.requestBody['accessToken'])
@@ -69,7 +70,7 @@ class SubmitTurn:
             'whosTurn': const.BLACK if color == const.WHITE else const.WHITE
         }
         self.context.matches.setMatchState(self.requestBody['accessToken'], newState)
-        self.response = Response(self.requestBody['accessToken'])
+        self.response = self.requestBody['accessToken']
 
     def removeStones(self, stonesToRemove, board):
         for stone in stonesToRemove:

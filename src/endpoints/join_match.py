@@ -1,4 +1,5 @@
 from pyramid.response import Response
+import json
 
 class JoinMatch:
     
@@ -7,14 +8,17 @@ class JoinMatch:
         self.requestBody = None
         self.context = context
         self.validRequest = True
+        self.response = None
 
     def processRequest(self):
         self.sanitizeRequest()
         if (not self.validRequest):
-            return Response("An internal error occured.")
+            self.response = Response("An internal error occured.")
 
         self.context.matches.joinMatch(self.requestBody['accessToken'], self.requestBody['whiteToken'])
-        return Response(self.requestBody['accessToken'])
+        self.response = self.requestBody['accessToken']
+    
+        return Response(json.dumps(self.response))
 
     def sanitizeRequest(self):
         self.requestBody = self.request.json

@@ -21,6 +21,7 @@ class Instance:
             config.add_route('joinMatch', '/joinMatch')
             config.add_route('submitTurn', '/submitTurn')
             config.add_route('requestState', '/requestState')
+            config.add_static_view('/', '/home/ixonstater/code/go_client/')
 
             config.add_view(self.requestMatch, route_name='requestMatch')
             config.add_view(self.joinMatch, route_name='joinMatch')
