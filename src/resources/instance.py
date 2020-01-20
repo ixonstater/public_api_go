@@ -2,11 +2,11 @@ from wsgiref.simple_server import make_server
 from pyramid.config import Configurator
 from pyramid.response import Response
 
-from endpoints.join_match import JoinMatch
 from endpoints.request_match import RequestMatch
 from endpoints.submit_turn import SubmitTurn
 from endpoints.request_state import RequestState
 from resources.runtime_data import Matches
+from resources import const
 
 class Instance:
 
@@ -18,13 +18,11 @@ class Instance:
     def initServer(self):
         with Configurator() as config:
             config.add_route('requestMatch', '/requestMatch')
-            config.add_route('joinMatch', '/joinMatch')
             config.add_route('submitTurn', '/submitTurn')
             config.add_route('requestState', '/requestState')
-            config.add_static_view('/', '/home/ixonstater/code/go_client/')
+            config.add_static_view('/', const.WEBSITE_PATH)
 
             config.add_view(self.requestMatch, route_name='requestMatch')
-            config.add_view(self.joinMatch, route_name='joinMatch')
             config.add_view(self.submitTurn, route_name='submitTurn')
             config.add_view(self.requestState, route_name='requestState')
 
@@ -37,10 +35,6 @@ class Instance:
     def requestMatch(self, request):
         matchRequest = RequestMatch(self, request)
         return matchRequest.processRequest()
-
-    def joinMatch(self, request):
-        matchJoin = JoinMatch(self, request)
-        return matchJoin.processRequest()
 
     def submitTurn(self, request):
         turnSubmit = SubmitTurn(self, request)

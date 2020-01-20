@@ -9,23 +9,15 @@ class RequestMatch:
 
     def __init__(self, context, request):
         self.request = request
-        self.requestBody = None
         self.context = context
-        self.validRequest = True
 
     def processRequest(self):
-        self.sanitizeRequest()
-        if(not self.validRequest):
-            return Response("An internal error occured.")
-
+        
         accessToken = self.generateAccessToken()
-        newMatch = Match(self.requestBody['blackToken'])
+        newMatch = Match()
         self.context.matches.addMatch(accessToken, newMatch)
 
         return Response(json.dumps(accessToken))
-
-    def sanitizeRequest(self):
-        self.requestBody = self.request.json
 
     def generateAccessToken(self):
         notUnique = True

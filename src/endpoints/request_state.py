@@ -18,8 +18,7 @@ class RequestState:
             self.response = '{}'
 
         else:
-
-            self.response = self.context.matches.getMatchStateAsJSON(self.requestBody['accessToken'])
+            self.response = json.dumps(self.context.matches.getMatchState(self.requestBody['accessToken']))
 
         return Response(json.dumps(self.response))
 
