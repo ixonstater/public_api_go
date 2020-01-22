@@ -30,7 +30,7 @@ class SubmitTurn:
             'x' in self.requestBody and
             'y' in self.requestBody and
             'accessToken' in self.requestBody and
-            'userToken' in self.requestBody
+            'whosTurn' in self.requestBody
             )
         ):
             self.validRequest = False
@@ -45,7 +45,7 @@ class SubmitTurn:
             self.response = 'An internal error occured.'
 
     def validateWhosTurn(self):
-        if(self.context.matches.checkWhosTurn(self.requestBody['accessToken'], self.requestBody['userToken'])):
+        if(not self.context.matches.checkWhosTurn(self.requestBody['accessToken'], self.requestBody['whosTurn'])):
             self.validRequest = False
             self.response = 'Not your turn.'
 
@@ -58,7 +58,7 @@ class SubmitTurn:
         matchData = self.context.matches.getMatchState(self.requestBody['accessToken'])
 
         nextMove = [self.requestBody['x'], self.requestBody['y']]
-        color = self.context.matches.getColor(self.requestBody['accessToken'], self.requestBody['userToken'])
+        color = self.requestBody['whosTurn']
         newBoard = matchData['boardState']
         newBoard[nextMove[0]][nextMove[1]] = color
 
@@ -70,7 +70,7 @@ class SubmitTurn:
             'whosTurn': const.BLACK if color == const.WHITE else const.WHITE
         }
         self.context.matches.setMatchState(self.requestBody['accessToken'], newState)
-        self.response = self.requestBody['accessToken']
+        self.response = newState
 
     def removeStones(self, stonesToRemove, board):
         for stone in stonesToRemove:

@@ -25,11 +25,9 @@ class Matches:
     def addToDBQueue(self, accessToken, nextMove):
         pass
 
-    def checkWhosTurn(self, accessToken, userToken):
+    def checkWhosTurn(self, accessToken, whosTurn):
         matchData = self.matchDump[accessToken]
-        whitesTurn = matchData.gameState['whosTurn'] == const.WHITE and userToken != matchData.whiteToken
-        blacksTurn = matchData.gameState['whosTurn'] == const.BLACK and userToken != matchData.blackToken
-        return (whitesTurn or blacksTurn)
+        return matchData.gameState['whosTurn'] == whosTurn
 
     def getColor(self, accessToken, userToken):
         match = self.matchDump[accessToken]

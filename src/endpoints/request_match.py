@@ -9,15 +9,27 @@ class RequestMatch:
 
     def __init__(self, context, request):
         self.request = request
+        self.response = None
         self.context = context
+        self.validRequest = True
 
     def processRequest(self):
-        
-        accessToken = self.generateAccessToken()
-        newMatch = Match()
-        self.context.matches.addMatch(accessToken, newMatch)
+        self.validateRequest()
+        if(self.validRequest):
+            accessToken = self.generateAccessToken()
+            newMatch = Match()
+            newMatch.gameState['whosTurn'] = self.requestBody['whosTurn']
+            self.context.matches.addMatch(accessToken, newMatch)
+            self.response = Response(json.dumps(accessToken))
 
-        return Response(json.dumps(accessToken))
+        return self.response
+
+    def validateRequest(self):
+        self.requestBody = self.request.json
+        whosTurn = self.requestBody['whosTurn']
+        if(whosTurn != const.BLACK and whosTurn != const.WHITE):
+            self.validRequest = False
+            self.response = Response(json.dumps('Invalid color submitted'))
 
     def generateAccessToken(self):
         notUnique = True

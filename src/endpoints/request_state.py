@@ -12,15 +12,18 @@ class RequestState:
     def processRequest(self):
         self.sanitizeRequest()
         if(not self.validRequest):
-            self.response = 'An internal error occured.'
+            self.response = Response(json.dumps('An internal error occured.'))
+
+        elif(not 'whosTurn' in self.requestBody):
+            self.response = Response(json.dumps(self.context.matches.getMatchState(self.requestBody['accessToken'])))
         
         elif(not self.context.matches.newStateExists(self.requestBody['accessToken'], self.requestBody['whosTurn'])):
-            self.response = '{}'
+            self.response = Response(json.dumps('{}'))
 
         else:
-            self.response = json.dumps(self.context.matches.getMatchState(self.requestBody['accessToken']))
+            self.response = Response(json.dumps(self.context.matches.getMatchState(self.requestBody['accessToken'])))
 
-        return Response(json.dumps(self.response))
+        return self.response
 
     def sanitizeRequest(self):
         self.requestBody = self.request.json
