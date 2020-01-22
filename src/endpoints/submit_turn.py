@@ -62,7 +62,7 @@ class SubmitTurn:
         newBoard = matchData['boardState']
         newBoard[nextMove[0]][nextMove[1]] = color
 
-        deadStoneFinder = FindDeadStones(newBoard, nextMove, color)
+        deadStoneFinder = FindDeadStones(newBoard, nextMove)
         stonesToRemove = deadStoneFinder.findStonesToRemove()
         newBoard = self.removeStones(stonesToRemove, newBoard)
         newState = {
@@ -73,15 +73,16 @@ class SubmitTurn:
         self.response = newState
 
     def removeStones(self, stonesToRemove, board):
-        for stone in stonesToRemove:
-            board[stone[0]][stone[1]] = const.EMPTY
+        for stoneGroup in stonesToRemove:
+            for stone in stoneGroup:
+                board[stone[0]][stone[1]] = const.EMPTY
         return board
             
 
     
 class FindDeadStones:
 
-    def __init__(self, board, nextMove, color):
+    def __init__(self, board, nextMove):
         self.visitedSet = set()
         self.toCheckQueue = []
         self.board = board
@@ -140,7 +141,7 @@ class FindDeadStones:
                 locations = [None, [1,0], [0,1], None]
 
             elif(y == 18):
-                locations = [[17, 0], [18,1], None, None]
+                locations = [[0, 17], [1,18], None, None]
 
             else:
                 locations = [[0, y-1], [1, y], [0, y+1], None]
@@ -156,10 +157,10 @@ class FindDeadStones:
                 locations = [[18, y-1], None, [18, y+1], [17, y]]
 
         elif(y == 0):
-            locations = [None, [0, x+1], [1, x], [0, x-1]]
+            locations = [None, [x+1, 0], [x, 1], [x-1, 0]]
 
         elif(y == 18):
-            locations = [[17, x], [18, x+1], None, [18, x-1]]
+            locations = [[x, 17], [x+1, 18], None, [x-1, 18]]
 
         else:
             locations = [[x, y-1], [x+1, y], [x, y+1], [x-1, y]]
