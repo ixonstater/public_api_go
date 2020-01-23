@@ -6,6 +6,7 @@ class SubmitTurn:
 
     def __init__(self, context, request):
         self.request = request
+        self.requestBody = None
         self.context = context
         self.validRequest = True
         self.response = None
@@ -14,6 +15,7 @@ class SubmitTurn:
         self.sanitizeRequest()
 
         if(self.validRequest):
+            self.context.matches.setLastUpdated(self.requestBody['accessToken'])
             self.validateWhosTurn()
             self.validateIndex()
 

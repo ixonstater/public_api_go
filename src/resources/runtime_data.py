@@ -1,11 +1,16 @@
 import json
 from resources import const
 from datetime import datetime
+from threading import Thread
+from time import sleep
 
 class Matches:
 
     def __init__(self):
         self.matchDump = {}
+        self.bgRemoveInactiveMatches = Thread(target=self.removeInactiveMatches)
+        self.bgRemoveInactiveMatches.daemon = True
+        self.bgRemoveInactiveMatches.start()
 
     def setMatchState(self, accessToken, newState):
         self.matchDump[accessToken].gameState = newState
@@ -41,10 +46,22 @@ class Matches:
             return const.EMPTY
     
     def indexIsEmpty(self, accessToken, index):
-        return self.matchDump[accessToken].gameState['boardState'][index[0]][index[1]] == const.EMPTY        
+        return self.matchDump[accessToken].gameState['boardState'][index[0]][index[1]] == const.EMPTY
+
+    def setLastUpdated(self, accessToken):
+        self.matchDump[accessToken].lastUpdated = datetime.now()
 
     def removeInactiveMatches(self):
-        pass
+        while(True):
+            now = datetime.now()
+            keys = list(self.matchDump.keys())
+
+            for key in keys:
+                diff = now - self.matchDump[key].lastUpdated
+                if(diff.seconds >= const.INACTIVE_TIMEOUT):
+                    del self.matchDump[key]
+
+            sleep(const.MATCH_REMOVAL_INTERVAL)
 
 
 class Match:
@@ -75,9 +92,6 @@ class Match:
                 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
             ]
         }
-
-
-    
 
 
 class Model:
