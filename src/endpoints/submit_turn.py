@@ -21,6 +21,7 @@ class SubmitTurn:
 
         if(self.validRequest):
             self.context.matches.addToDBQueue(self.requestBody['accessToken'], [self.requestBody['x'], self.requestBody['y']])
+            self.context.matches.setPreviousTurn(self.requestBody['accessToken'], [self.requestBody['x'], self.requestBody['y']])
             self.updateGameState()
 
         return Response(json.dumps(self.response))

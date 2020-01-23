@@ -8,6 +8,7 @@ class Matches:
 
     def __init__(self):
         self.matchDump = {}
+        self.databaseQueue = []
         self.bgRemoveInactiveMatches = Thread(target=self.removeInactiveMatches)
         self.bgRemoveInactiveMatches.daemon = True
         self.bgRemoveInactiveMatches.start()
@@ -33,6 +34,9 @@ class Matches:
     def checkWhosTurn(self, accessToken, whosTurn):
         matchData = self.matchDump[accessToken]
         return matchData.gameState['whosTurn'] == whosTurn
+
+    def setPreviousTurn(self, accessToken, move):
+        self.matchDump[accessToken].previousTurn = move
 
     def getColor(self, accessToken, userToken):
         match = self.matchDump[accessToken]
@@ -63,11 +67,15 @@ class Matches:
 
             sleep(const.MATCH_REMOVAL_INTERVAL)
 
+    def moveStatesToDB(self):
+        pass
+
 
 class Match:
 
     def __init__(self):
         self.lastUpdated = datetime.now()
+        self.previousTurn = None
         self.gameState = {
             "whosTurn": const.BLACK,
             "boardState": [

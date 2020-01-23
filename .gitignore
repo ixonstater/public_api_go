@@ -6,3 +6,4 @@ share/
 .vscode/
 pyvenv.cfg
 __pycache__/
+credentials.py
