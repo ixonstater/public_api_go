@@ -3,15 +3,19 @@ from resources import const
 from datetime import datetime
 from threading import Thread
 from time import sleep
+import mysql.connector
+from resources import credentials
 
 class Matches:
 
     def __init__(self):
         self.matchDump = {}
         self.databaseQueue = []
-        self.bgRemoveInactiveMatches = Thread(target=self.removeInactiveMatches)
-        self.bgRemoveInactiveMatches.daemon = True
-        self.bgRemoveInactiveMatches.start()
+        self.sleepCount = 0
+
+        self.bgProcess = Thread(target=self.backgroundProcessing)
+        self.bgProcess.daemon = True
+        self.bgProcess.start()
 
     def setMatchState(self, accessToken, newState):
         self.matchDump[accessToken].gameState = newState
@@ -29,7 +33,14 @@ class Matches:
         return token in self.matchDump
 
     def addToDBQueue(self, accessToken, nextMove):
-        pass
+        self.databaseQueue.append(
+            {
+                'accessToken': accessToken,
+                'nextMove': nextMove,
+                'state': self.matchDump[accessToken].gameState,
+                'previousTurn': self.matchDump[accessToken].previousTurn
+            }
+        )
 
     def checkWhosTurn(self, accessToken, whosTurn):
         matchData = self.matchDump[accessToken]
@@ -55,20 +66,53 @@ class Matches:
     def setLastUpdated(self, accessToken):
         self.matchDump[accessToken].lastUpdated = datetime.now()
 
-    def removeInactiveMatches(self):
+    def backgroundProcessing(self):
         while(True):
-            now = datetime.now()
-            keys = list(self.matchDump.keys())
+            if(self.sleepCount >= const.RESET_COUNT):
+                self.sleepCount = 0
 
-            for key in keys:
-                diff = now - self.matchDump[key].lastUpdated
-                if(diff.seconds >= const.INACTIVE_TIMEOUT):
-                    del self.matchDump[key]
+            self.moveStatesToDB()
+            self.removeInactiveMatches()
+            
+            self.sleepCount += 1
+            sleep(const.BG_SLEEP_INTERVAL)
 
-            sleep(const.MATCH_REMOVAL_INTERVAL)
+    def removeInactiveMatches(self):
+        if (self.sleepCount % const.REMOVE_MATCHES_COUNT != 0):
+            return
+
+        now = datetime.now()
+        keys = list(self.matchDump.keys())
+
+        for key in keys:
+            diff = now - self.matchDump[key].lastUpdated
+            if(diff.seconds >= const.DELETE_MATCH_TIMEOUT):
+                del self.matchDump[key]
 
     def moveStatesToDB(self):
-        pass
+        if (self.sleepCount % const.MOVE_TO_DB_COUNT != 0):
+            return
+        
+        connection = mysql.connector.connect(
+            host = 'localhost',
+            user = credentials.username,
+            passwd = credentials.password,
+            database = 'go'
+        )
+        cursor = connection.cursor()
+
+        for state in self.databaseQueue:
+            
+            accessToken = state['accessToken']
+            previousTurn = json.dumps(state['previousTurn'])
+            nextMove = json.dumps(state['nextMove'])
+            state = json.dumps(state['state'])
+
+            query = F'insert into gamestates (accesstoken, nextmove, previousmove, state) values (\'{accessToken}\', \'{nextMove}\', \'{previousTurn}\', \'{state}\')'
+            cursor.execute(query)
+
+        connection.commit()
+        self.databaseQueue = []
 
 
 class Match:
