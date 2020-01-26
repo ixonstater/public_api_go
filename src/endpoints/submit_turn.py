@@ -65,8 +65,11 @@ class SubmitTurn:
         newBoard = matchData['boardState']
         newBoard[nextMove[0]][nextMove[1]] = color
 
-        deadStoneFinder = FindDeadStones(newBoard, nextMove)
+        deadStoneFinder = FindDeadStones(newBoard)
         stonesToRemove = deadStoneFinder.findStonesToRemove()
+        currentMoveGroup, currentMoveGroupLives = deadStoneFinder.findStonesToRemoveHelper(nextMove[0], nextMove[1])
+        removeCurrentGroup = self.removeCurrentGroup(currentMoveGroup, currentMoveGroupLives)
+
         newBoard = self.removeStones(stonesToRemove, newBoard)
         newState = {
             'boardState': newBoard,
@@ -80,16 +83,18 @@ class SubmitTurn:
             for stone in stoneGroup:
                 board[stone[0]][stone[1]] = const.EMPTY
         return board
+
+    def removeCurrentGroup(self, lifeCount, stoneGroup):
+        pass
             
 
     
 class FindDeadStones:
 
-    def __init__(self, board, nextMove):
+    def __init__(self, board):
         self.visitedSet = set()
         self.toCheckQueue = []
         self.board = board
-        self.nextMove = nextMove
         self.friendlyColor = None
         self.toRemove = []
         self.friendCode = 1
@@ -130,8 +135,6 @@ class FindDeadStones:
                 
                 elif(index[1] == self.friendCode):
                     self.toCheckQueue.append(index[0])
-
-
 
         return [stoneGroup, lifeCount]
 
