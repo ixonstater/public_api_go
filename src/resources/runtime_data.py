@@ -5,6 +5,7 @@ from threading import Thread
 from time import sleep
 import mysql.connector
 from resources import credentials
+from resources import config
 
 class Matches:
 
@@ -78,41 +79,37 @@ class Matches:
             sleep(const.BG_SLEEP_INTERVAL)
 
     def removeInactiveMatches(self):
-        if (self.sleepCount % const.REMOVE_MATCHES_COUNT != 0):
-            return
+        if (self.sleepCount % const.REMOVE_MATCHES_COUNT == 0 and config.REMOVE_INACTIVE_MATCHES):
+            now = datetime.now()
+            keys = list(self.matchDump.keys())
 
-        now = datetime.now()
-        keys = list(self.matchDump.keys())
-
-        for key in keys:
-            diff = now - self.matchDump[key].lastUpdated
-            if(diff.seconds >= const.DELETE_MATCH_TIMEOUT):
-                del self.matchDump[key]
+            for key in keys:
+                diff = now - self.matchDump[key].lastUpdated
+                if(diff.seconds >= const.DELETE_MATCH_TIMEOUT):
+                    del self.matchDump[key]
 
     def moveStatesToDB(self):
-        if (self.sleepCount % const.MOVE_TO_DB_COUNT != 0):
-            return
-        
-        connection = mysql.connector.connect(
-            host = 'localhost',
-            user = credentials.username,
-            passwd = credentials.password,
-            database = 'go'
-        )
-        cursor = connection.cursor()
+        if (self.sleepCount % const.MOVE_TO_DB_COUNT == 0 and config.LOG_TO_DATABASE):
+            connection = mysql.connector.connect(
+                host = 'localhost',
+                user = credentials.username,
+                passwd = credentials.password,
+                database = 'go'
+            )
+            cursor = connection.cursor()
 
-        for state in self.databaseQueue:
-            
-            accessToken = state['accessToken']
-            previousTurn = json.dumps(state['previousTurn'])
-            nextMove = json.dumps(state['nextMove'])
-            state = json.dumps(state['state'])
+            for state in self.databaseQueue:
+                
+                accessToken = state['accessToken']
+                previousTurn = json.dumps(state['previousTurn'])
+                nextMove = json.dumps(state['nextMove'])
+                state = json.dumps(state['state'])
 
-            query = F'insert into gamestates (accesstoken, nextmove, previousmove, state) values (\'{accessToken}\', \'{nextMove}\', \'{previousTurn}\', \'{state}\')'
-            cursor.execute(query)
+                query = F'insert into gamestates (accesstoken, nextmove, previousmove, state) values (\'{accessToken}\', \'{nextMove}\', \'{previousTurn}\', \'{state}\')'
+                cursor.execute(query)
 
-        connection.commit()
-        self.databaseQueue = []
+            connection.commit()
+            self.databaseQueue = []
 
 
 class Match:

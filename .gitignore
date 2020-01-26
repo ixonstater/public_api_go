@@ -7,3 +7,4 @@ share/
 pyvenv.cfg
 __pycache__/
 credentials.py
+config.py
