@@ -68,9 +68,11 @@ class SubmitTurn:
         deadStoneFinder = FindDeadStones(newBoard)
         stonesToRemove = deadStoneFinder.findStonesToRemove()
         currentMoveGroup, currentMoveGroupLives = deadStoneFinder.findStonesToRemoveHelper(nextMove[0], nextMove[1])
-        removeCurrentGroup = self.removeCurrentGroup(currentMoveGroup, currentMoveGroupLives)
 
-        newBoard = self.removeStones(stonesToRemove, newBoard)
+        allStonesRemovedBoard = self.removeStones(stonesToRemove, newBoard)
+        currentMoveGroupReplacedBoard = self.replaceCurrentGroup(color, currentMoveGroup, allStonesRemovedBoard)
+        completedBoard = self.handleNestedGroups(currentMoveGroupReplacedBoard, nextMove)
+        
         newState = {
             'boardState': newBoard,
             'whosTurn': const.BLACK if color == const.WHITE else const.WHITE
@@ -84,8 +86,21 @@ class SubmitTurn:
                 board[stone[0]][stone[1]] = const.EMPTY
         return board
 
-    def removeCurrentGroup(self, lifeCount, stoneGroup):
-        pass
+    def handleNestedGroups(self, board, nextMove):
+        tempStoneFinder = FindDeadStones(board)
+        currentMoveGroup, currentMoveGroupLivesAfterReplacement = tempStoneFinder.findStonesToRemoveHelper(nextMove[0], nextMove[1])
+
+        if(currentMoveGroupLivesAfterReplacement == 0):
+            return self.replaceCurrentGroup(const.EMPTY, currentMoveGroup, board)
+
+        else:
+            return board
+
+    def replaceCurrentGroup(self, color, group, board):
+        for stone in group:
+            board[stone[0]][stone[1]] = color
+
+        return board
             
 
     
@@ -105,17 +120,19 @@ class FindDeadStones:
         for x in range(0, 19):
             for y in range(0, 19):
                 if(self.board[x][y] != const.EMPTY):
-                    self.friendlyColor = self.board[x][y]
                     stoneGroup, lifeCount = self.findStonesToRemoveHelper(x,y)
                     if(lifeCount == 0 and len(stoneGroup) != 0):
                         self.toRemove.append(stoneGroup)
 
+        self.visitedSet = set()
+        self.toCheckQueue = []
         return self.toRemove
 
     def findStonesToRemoveHelper(self,x,y):
         lifeCount = 0
         stoneGroup = []
         stoneLocation = [x,y]
+        self.friendlyColor = self.board[x][y]
         self.toCheckQueue.append(stoneLocation)
 
         while(self.toCheckQueue):
