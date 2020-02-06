@@ -58,7 +58,7 @@ class SubmitTurn:
             self.response = 'Stone already in place in that index.'
 
     def updateGameState(self):
-        matchData = self.context.matches.getMatchState(self.requestBody['accessToken'])
+        matchData = self.context.matches.getMatchState(self.requestBody['accessToken'])['state']
 
         nextMove = [self.requestBody['x'], self.requestBody['y']]
         color = self.requestBody['whosTurn']

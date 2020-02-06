@@ -22,7 +22,10 @@ class Matches:
         self.matchDump[accessToken].gameState = newState
 
     def getMatchState(self, accessToken):
-        return self.matchDump[accessToken].gameState
+        return {
+            'state': self.matchDump[accessToken].gameState,
+            'previousMove': self.matchDump[accessToken].previousTurn
+        }
 
     def newStateExists(self, accessToken, whosTurn):
         return self.matchDump[accessToken].gameState['whosTurn'] != whosTurn
