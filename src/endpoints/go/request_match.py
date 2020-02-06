@@ -1,9 +1,9 @@
 from pyramid.response import Response
-from resources.runtime_data import Match
+from resources.go.runtime_data import Match
 import random
 import string
 import json
-from resources import const
+from resources.go import const
 
 class RequestMatch:
 
@@ -19,7 +19,7 @@ class RequestMatch:
             accessToken = self.generateAccessToken()
             newMatch = Match()
             newMatch.gameState['whosTurn'] = self.requestBody['whosTurn']
-            self.context.matches.addMatch(accessToken, newMatch)
+            self.context.addMatch(accessToken, newMatch)
             self.response = Response(json.dumps(accessToken))
 
         return self.response
@@ -36,5 +36,5 @@ class RequestMatch:
         while(notUnique):
             letters = string.ascii_lowercase
             letters = ''.join(random.choice(letters) for i in range(5))
-            notUnique = self.context.matches.tokenExists(letters)
+            notUnique = self.context.tokenExists(letters)
         return letters

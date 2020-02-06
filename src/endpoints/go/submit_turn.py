@@ -1,5 +1,5 @@
 from pyramid.response import Response
-from resources import const
+from resources.go import const
 import json
 
 class SubmitTurn:
@@ -15,13 +15,13 @@ class SubmitTurn:
         self.sanitizeRequest()
 
         if(self.validRequest):
-            self.context.matches.setLastUpdated(self.requestBody['accessToken'])
+            self.context.setLastUpdated(self.requestBody['accessToken'])
             self.validateWhosTurn()
             self.validateIndex()
 
         if(self.validRequest):
-            self.context.matches.addToDBQueue(self.requestBody['accessToken'], [self.requestBody['x'], self.requestBody['y']])
-            self.context.matches.setPreviousTurn(self.requestBody['accessToken'], [self.requestBody['x'], self.requestBody['y']])
+            self.context.addToDBQueue(self.requestBody['accessToken'], [self.requestBody['x'], self.requestBody['y']])
+            self.context.setPreviousTurn(self.requestBody['accessToken'], [self.requestBody['x'], self.requestBody['y']])
             self.updateGameState()
 
         return Response(json.dumps(self.response))
@@ -43,22 +43,22 @@ class SubmitTurn:
             self.validRequest = False
             self.response = 'An internal error occured.'
 
-        elif(not self.context.matches.tokenExists(self.requestBody['accessToken'])):
+        elif(not self.context.tokenExists(self.requestBody['accessToken'])):
             self.validRequest = False
             self.response = 'An internal error occured.'
 
     def validateWhosTurn(self):
-        if(not self.context.matches.checkWhosTurn(self.requestBody['accessToken'], self.requestBody['whosTurn'])):
+        if(not self.context.checkWhosTurn(self.requestBody['accessToken'], self.requestBody['whosTurn'])):
             self.validRequest = False
             self.response = 'Not your turn.'
 
     def validateIndex(self):
-        if(not self.context.matches.indexIsEmpty(self.requestBody['accessToken'], [self.requestBody['x'], self.requestBody['y']])):
+        if(not self.context.indexIsEmpty(self.requestBody['accessToken'], [self.requestBody['x'], self.requestBody['y']])):
             self.validRequest = False
             self.response = 'Stone already in place in that index.'
 
     def updateGameState(self):
-        matchData = self.context.matches.getMatchState(self.requestBody['accessToken'])['state']
+        matchData = self.context.getMatchState(self.requestBody['accessToken'])['state']
 
         nextMove = [self.requestBody['x'], self.requestBody['y']]
         color = self.requestBody['whosTurn']
@@ -77,7 +77,7 @@ class SubmitTurn:
             'boardState': newBoard,
             'whosTurn': const.BLACK if color == const.WHITE else const.WHITE
         }
-        self.context.matches.setMatchState(self.requestBody['accessToken'], newState)
+        self.context.setMatchState(self.requestBody['accessToken'], newState)
         self.response = newState
 
     def removeStones(self, stonesToRemove, board):
