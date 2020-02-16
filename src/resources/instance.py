@@ -1,4 +1,3 @@
-from wsgiref.simple_server import make_server
 from pyramid.config import Configurator
 from pyramid.response import Response
 
@@ -26,11 +25,8 @@ class Instance:
             config.add_view(self.submitTurn, route_name='submitTurn')
             config.add_view(self.requestState, route_name='requestState')
 
-            app = config.make_wsgi_app()
+            return config.make_wsgi_app()
             
-        server = make_server('0.0.0.0', 8080, app)
-        self.server = server
-        server.serve_forever()
 
     def requestMatch(self, request):
         matchRequest = RequestMatch(self.matches, request)
