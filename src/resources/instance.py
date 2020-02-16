@@ -7,6 +7,7 @@ from endpoints.submit_turn import SubmitTurn
 from endpoints.request_state import RequestState
 from resources.runtime_data import Matches
 from resources import const
+from resources import config as appConfig
 
 class Instance:
 
@@ -28,7 +29,7 @@ class Instance:
 
             app = config.make_wsgi_app()
             
-        server = make_server('0.0.0.0', 8080, app)
+        server = make_server('0.0.0.0', appConfig.PORT, app)
         self.server = server
         server.serve_forever()
 
