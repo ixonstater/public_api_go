@@ -1,11 +1,11 @@
 import json
-from resources.go import const
+from src.resources.go import const
 from datetime import datetime
 from threading import Thread
 from time import sleep
 import mysql.connector
-from resources.go import credentials
-from resources.go import config
+from src.resources.go import credentials
+from src.resources.go import config
 
 class Matches:
 

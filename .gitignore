@@ -9,3 +9,4 @@ __pycache__/
 credentials.py
 config.py
 __init__.py
+server_builds/

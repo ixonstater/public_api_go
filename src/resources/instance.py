@@ -1,11 +1,11 @@
 from pyramid.config import Configurator
 from pyramid.response import Response
 
-from endpoints.go.request_match import RequestMatch
-from endpoints.go.submit_turn import SubmitTurn
-from endpoints.go.request_state import RequestState
-from resources.go.runtime_data import Matches
-from resources.go import const as go_const
+from src.endpoints.go.request_match import RequestMatch
+from src.endpoints.go.submit_turn import SubmitTurn
+from src.endpoints.go.request_state import RequestState
+from src.resources.go.runtime_data import Matches
+from src.resources.go import const as go_const
 
 class Instance:
 

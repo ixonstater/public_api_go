@@ -1,9 +1,9 @@
 from pyramid.response import Response
-from resources.go.runtime_data import Match
+from src.resources.go.runtime_data import Match
 import random
 import string
 import json
-from resources.go import const
+from src.resources.go import const
 
 class RequestMatch:
 

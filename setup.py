@@ -19,7 +19,7 @@ setup(
     zip_safe=False,
     entry_points={
         'paste.app_factory': [
-            'main = src:main',
+            'main = src.main',
         ],
     },
 )

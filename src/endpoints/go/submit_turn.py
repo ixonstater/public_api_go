@@ -1,5 +1,5 @@
 from pyramid.response import Response
-from resources.go import const
+from src.resources.go import const
 import json
 
 class SubmitTurn:
