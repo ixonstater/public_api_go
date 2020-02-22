@@ -8,6 +8,5 @@ pyvenv.cfg
 __pycache__/
 credentials.py
 config.py
-requirements.txt
 __init__.py
 server_builds/

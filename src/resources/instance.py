@@ -1,7 +1,7 @@
 from pyramid.config import Configurator
 from pyramid.response import Response
 
-from src.resources import config as appConfig
+from src.resources.go import config as appConfig
 from src.endpoints.go.request_match import RequestMatch
 from src.endpoints.go.submit_turn import SubmitTurn
 from src.endpoints.go.request_state import RequestState
