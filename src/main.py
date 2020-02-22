@@ -3,7 +3,6 @@ from src.resources.go import config as appConfig
 from wsgiref.simple_server import make_server
 
 def main():
-    print('working')
     inst = instance.Instance()
     app = inst.initServer()
     
