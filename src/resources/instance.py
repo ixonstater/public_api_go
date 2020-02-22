@@ -1,13 +1,12 @@
-from wsgiref.simple_server import make_server
 from pyramid.config import Configurator
 from pyramid.response import Response
 
-from endpoints.request_match import RequestMatch
-from endpoints.submit_turn import SubmitTurn
-from endpoints.request_state import RequestState
-from resources.runtime_data import Matches
-from resources import const
-from resources import config as appConfig
+from src.resources import config as appConfig
+from src.endpoints.go.request_match import RequestMatch
+from src.endpoints.go.submit_turn import SubmitTurn
+from src.endpoints.go.request_state import RequestState
+from src.resources.go.runtime_data import Matches
+from src.resources.go import const as go_const
 
 class Instance:
 
@@ -21,26 +20,22 @@ class Instance:
             config.add_route('requestMatch', '/requestMatch')
             config.add_route('submitTurn', '/submitTurn')
             config.add_route('requestState', '/requestState')
-            config.add_static_view('/', const.WEBSITE_PATH)
+            config.add_static_view('/', go_const.WEBSITE_PATH)
 
             config.add_view(self.requestMatch, route_name='requestMatch')
             config.add_view(self.submitTurn, route_name='submitTurn')
             config.add_view(self.requestState, route_name='requestState')
 
-            app = config.make_wsgi_app()
-            
-        server = make_server('0.0.0.0', appConfig.PORT, app)
-        self.server = server
-        server.serve_forever()
+            return config.make_wsgi_app()
 
     def requestMatch(self, request):
-        matchRequest = RequestMatch(self, request)
+        matchRequest = RequestMatch(self.matches, request)
         return matchRequest.processRequest()
 
     def submitTurn(self, request):
-        turnSubmit = SubmitTurn(self, request)
+        turnSubmit = SubmitTurn(self.matches, request)
         return turnSubmit.processRequest()
 
     def requestState(self, request):
-        stateRequest = RequestState(self, request)
+        stateRequest = RequestState(self.matches, request)
         return stateRequest.processRequest()
