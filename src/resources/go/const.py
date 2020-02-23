@@ -7,6 +7,3 @@ BG_SLEEP_INTERVAL = 5
 RESET_COUNT = 1000
 REMOVE_MATCHES_COUNT = 1000
 MOVE_TO_DB_COUNT = 100
-
-WEBSITE_PATH = '/home/ixonstater/code/go/go_client/'
-# WEBSITE_PATH = '/Users/otheruser/bin/lib/go-client'

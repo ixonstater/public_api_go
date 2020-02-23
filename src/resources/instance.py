@@ -6,7 +6,6 @@ from src.endpoints.go.request_match import RequestMatch
 from src.endpoints.go.submit_turn import SubmitTurn
 from src.endpoints.go.request_state import RequestState
 from src.resources.go.runtime_data import Matches
-from src.resources.go import const as go_const
 
 class Instance:
 
@@ -20,7 +19,7 @@ class Instance:
             config.add_route('requestMatch', '/requestMatch')
             config.add_route('submitTurn', '/submitTurn')
             config.add_route('requestState', '/requestState')
-            config.add_static_view('/', go_const.WEBSITE_PATH)
+            config.add_static_view('play_go', appConfig.webroot + '/go_client')
 
             config.add_view(self.requestMatch, route_name='requestMatch')
             config.add_view(self.submitTurn, route_name='submitTurn')
