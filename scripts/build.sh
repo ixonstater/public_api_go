@@ -1,7 +1,5 @@
-cd ..
-
 #uninstall old build
-./uninstall_old_build.sh
+./scripts/uninstall_old_build.sh
 
 #create server code wheel
 bin/python3 setup.py bdist_wheel
