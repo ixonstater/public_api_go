@@ -1,5 +1,5 @@
 from src.resources import instance
-from src.resources.go import config as appConfig
+from src import config as appConfig
 from wsgiref.simple_server import make_server
 
 def main():

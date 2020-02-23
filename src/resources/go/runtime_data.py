@@ -4,8 +4,7 @@ from datetime import datetime
 from threading import Thread
 from time import sleep
 import mysql.connector
-from src.resources.go import credentials
-from src.resources.go import config
+from src import config
 
 class Matches:
 
@@ -95,8 +94,8 @@ class Matches:
         if (self.sleepCount % const.MOVE_TO_DB_COUNT == 0 and config.LOG_TO_DATABASE):
             connection = mysql.connector.connect(
                 host = 'localhost',
-                user = credentials.username,
-                passwd = credentials.password,
+                user = config.username,
+                passwd = config.password,
                 database = 'go'
             )
             cursor = connection.cursor()
