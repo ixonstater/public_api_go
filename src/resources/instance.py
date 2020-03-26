@@ -19,7 +19,8 @@ class Instance:
             config.add_route('requestMatch', '/requestMatch')
             config.add_route('submitTurn', '/submitTurn')
             config.add_route('requestState', '/requestState')
-            config.add_static_view('play_go', appConfig.webroot + '/go_client')
+            config.add_static_view('play_go', appConfig.go_root)
+            config.add_static_view('/', appConfig.web_root)
 
             config.add_view(self.requestMatch, route_name='requestMatch')
             config.add_view(self.submitTurn, route_name='submitTurn')
